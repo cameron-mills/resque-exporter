@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/cameron-mills/resque-exporter/compare/v1.0.1...v1.1.0) (2024-09-06)
+
+
+### Features
+
+* automatically build and push new docker images on release ([e6150df](https://github.com/cameron-mills/resque-exporter/commit/e6150dfba21d33fd0dac816c377130b916ece6a0))
+* configure dependabot ([0c00c7d](https://github.com/cameron-mills/resque-exporter/commit/0c00c7d52951a50b91789fde033e42c5f6f483bd))
+
 ## [1.0.1](https://github.com/cameron-mills/resque-exporter/compare/v1.0.0...v1.0.1) (2024-09-06)
 
 

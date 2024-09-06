@@ -1,4 +1,4 @@
-GO    := GO15VENDOREXPERIMENT=1 go
+GO    := go
 PROMU := $(GOPATH)/bin/promu
 pkgs   = $(shell $(GO) list ./... | grep -v /vendor/)
 
@@ -36,7 +36,7 @@ tarball: promu
 
 docker:
 	@echo ">> building docker image"
-	@docker build -t "$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)" .
+	@docker build --platform linux/amd64 -t "cmillsll/$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)" .
 
 promu:
 	@GOOS=$(shell uname -s | tr A-Z a-z) \

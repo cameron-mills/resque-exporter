@@ -18,6 +18,10 @@ If your Resque is using a non-default namespace (default is `resque`) to prefix 
 
     ./resque-exporter --redis.namespace app
 
+ACL credentials can be passed within the Redis URL.
+    
+    redis://username:password@redis.example.com:6379/1
+
 ### Flags
 
     $ ./resque-exporter --help
@@ -37,7 +41,7 @@ If your Resque is using a non-default namespace (default is `resque`) to prefix 
 
 You can deploy the resque exporter using the [zappi/resque-exporter](https://hub.docker.com/r/zappi/resque-exporter/) Docker image.
 
-    docker run -d -p 9447:9447 zappi/resque-exporter --redis.url redis://redis.example.com:6379
+    docker run -d -p 9447:9447 cmillsdev/resque-exporter --redis.url redis://redis.example.com:6379
 
 ## Metrics
 

@@ -1,8 +1,11 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/prometheus/common/version"
 	"net"
 	"net/http"
 	"net/url"
@@ -11,10 +14,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/prometheus-junkyard/log"
+	"github.com/redis/go-redis/v9"
+
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/common/log"
-	"github.com/prometheus/common/version"
+	cv "github.com/prometheus/client_golang/prometheus/collectors/version"
 )
 
 const (
@@ -157,6 +161,12 @@ func newRedisClient(redisURL string) (*redis.Client, error) {
 		return nil, fmt.Errorf("unknown URL scheme: %s", u.Scheme)
 	}
 
+	// username function only returns username
+	if username := u.User.Username(); username != "" {
+		options.Username = username
+	}
+
+	//returns function to indicate if password is present and password itself
 	if password, ok := u.User.Password(); ok {
 		options.Password = password
 	}
@@ -203,24 +213,24 @@ func (e *Exporter) scrape(ch chan<- prometheus.Metric) error {
 			float64(time.Since(start).Seconds()))
 	}(time.Now())
 
-	executions, err := e.redisClient.Get(e.redisKey("stat:processed")).Float64()
+	executions, err := e.redisClient.Get(context.Background(), e.redisKey("stat:processed")).Float64()
 	if err != nil && err != redis.Nil {
 		return err
 	}
 	ch <- prometheus.MustNewConstMetric(jobExecutionsDesc, prometheus.CounterValue, executions)
 
-	failedExecutions, err := e.redisClient.Get(e.redisKey("stat:failed")).Float64()
+	failedExecutions, err := e.redisClient.Get(context.Background(), e.redisKey("stat:failed")).Float64()
 	if err != nil && err != redis.Nil {
 		return err
 	}
 	ch <- prometheus.MustNewConstMetric(failedJobExecutionsDesc, prometheus.CounterValue, failedExecutions)
 
-	queues, err := e.redisClient.SMembers(e.redisKey("queues")).Result()
+	queues, err := e.redisClient.SMembers(context.Background(), e.redisKey("queues")).Result()
 	if err != nil {
 		return err
 	}
 
-	workers, err := e.redisClient.SMembers(e.redisKey("workers")).Result()
+	workers, err := e.redisClient.SMembers(context.Background(), e.redisKey("workers")).Result()
 	if err != nil {
 		return err
 	}
@@ -229,7 +239,7 @@ func (e *Exporter) scrape(ch chan<- prometheus.Metric) error {
 	workersPerQueue := make(map[string]int64)
 	var workingWorkers int
 	for _, worker := range workers {
-		exists, err := e.redisClient.Exists(e.redisKey("worker", worker)).Result()
+		exists, err := e.redisClient.Exists(context.Background(), e.redisKey("worker", worker)).Result()
 		if err != nil {
 			return err
 		}
@@ -262,7 +272,7 @@ func (e *Exporter) scrape(ch chan<- prometheus.Metric) error {
 
 	processingRatioPerQueue := make(map[string]float64)
 	for _, queue := range queues {
-		jobs, err := e.redisClient.LLen(e.redisKey("queue", queue)).Result()
+		jobs, err := e.redisClient.LLen(context.Background(), e.redisKey("queue", queue)).Result()
 		if err != nil {
 			return err
 		}
@@ -281,13 +291,13 @@ func (e *Exporter) scrape(ch chan<- prometheus.Metric) error {
 		ch <- prometheus.MustNewConstMetric(workersPerQueueDesc, prometheus.GaugeValue, float64(workersPerQueue[queue]), queue)
 	}
 
-	failedQueues, err := e.redisClient.SMembers(e.redisKey("failed_queues")).Result()
+	failedQueues, err := e.redisClient.SMembers(context.Background(), e.redisKey("failed_queues")).Result()
 	if err != nil {
 		return err
 	}
 
 	if len(failedQueues) == 0 {
-		exists, err := e.redisClient.Exists(e.redisKey("failed")).Result()
+		exists, err := e.redisClient.Exists(context.Background(), e.redisKey("failed")).Result()
 		if err != nil {
 			return err
 		}
@@ -297,7 +307,7 @@ func (e *Exporter) scrape(ch chan<- prometheus.Metric) error {
 	}
 
 	for _, queue := range failedQueues {
-		jobs, err := e.redisClient.LLen(e.redisKey(queue)).Result()
+		jobs, err := e.redisClient.LLen(context.Background(), e.redisKey(queue)).Result()
 		if err != nil {
 			return err
 		}
@@ -312,7 +322,7 @@ func (e *Exporter) redisKey(a ...string) string {
 }
 
 func init() {
-	prometheus.MustRegister(version.NewCollector("resque_exporter"))
+	prometheus.MustRegister(cv.NewCollector("resque_exporter"))
 }
 
 func main() {
@@ -336,7 +346,7 @@ func main() {
 	}
 	prometheus.MustRegister(exporter)
 
-	http.Handle(*metricPath, prometheus.Handler())
+	http.Handle(*metricPath, promhttp.Handler())
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`<html>
 <head><title>Resque Exporter</title></head>

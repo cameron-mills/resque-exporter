@@ -172,8 +172,6 @@ func newRedisClient(redisURL string) (*redis.Client, error) {
 		options.Password = password
 	}
 
-	log.Infoln("Redis Connection: ", &options)
-
 	return redis.NewClient(&options), nil
 }
 

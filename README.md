@@ -39,7 +39,7 @@ ACL credentials can be passed within the Redis URL.
 
 ### Docker
 
-You can deploy the resque exporter using the [zappi/resque-exporter](https://hub.docker.com/r/zappi/resque-exporter/) Docker image.
+You can deploy the resque exporter using the [cmillsdev/resque-exporter](https://hub.docker.com/r/cmillsdev/resque-exporter/) Docker image.
 
     docker run -d -p 9447:9447 cmillsdev/resque-exporter --redis.url redis://redis.example.com:6379
 

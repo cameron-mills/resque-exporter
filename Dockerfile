@@ -10,7 +10,7 @@ RUN make PREFIX=/
 
 
 FROM quay.io/prometheus/busybox
-MAINTAINER Satoshi Matsumoto <kaorimatz@gmail.com>
+MAINTAINER Cameron Mills <cameron@cmills.dev>
 
 COPY --from=builder /resque-exporter /bin/resque-exporter
 

@@ -41,7 +41,7 @@ ACL credentials can be passed within the Redis URL.
 
 You can deploy the resque exporter using the [cmillsdev/resque-exporter](https://hub.docker.com/r/cmillsdev/resque-exporter/) Docker image.
 
-    docker run -d -p 9447:9447 cmillsdev/resque-exporter --redis.url redis://redis.example.com:6379
+    docker run -d -p 9447:9447 cmillsdev/resque-exporter:v1.1.0 --redis.url redis://redis.example.com:6379
 
 ## Metrics
 

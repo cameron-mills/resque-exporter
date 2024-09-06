@@ -1,5 +1,5 @@
 repository:
-    path: github.com/Intellection/resque-exporter
+    path: ./
 build:
     binaries:
         - name: resque-exporter

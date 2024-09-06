@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/cameron-mills/resque-exporter/compare/v1.0.0...v1.0.1) (2024-09-06)
+
+
+### Bug Fixes
+
+* Introduce Redis ACL support, remove dep, upgrade dependancies ([c27fadc](https://github.com/cameron-mills/resque-exporter/commit/c27fadc125a9fe2b37f7abc618dfffd10cf467d5))
+
 ## 0.3.0
 
 #### Changed

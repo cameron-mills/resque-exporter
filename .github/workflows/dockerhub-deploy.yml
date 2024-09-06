@@ -34,4 +34,4 @@ jobs:
 
       # Verify the image is available in DockerHub
       - name: Verify image
-        run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/myapp:${{ github.ref_name }}
+        run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/resque-exporter:${{ github.ref_name }}

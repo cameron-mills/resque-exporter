@@ -19,7 +19,6 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	cv "github.com/prometheus/client_golang/prometheus/collectors/version"
-	//"github.com/prometheus/common/log"
 )
 
 const (

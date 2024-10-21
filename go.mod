@@ -6,7 +6,7 @@ require (
 	github.com/prometheus-junkyard/log v0.0.0-20151026012452-9a3136781e1f
 	github.com/prometheus/client_golang v1.20.4
 	github.com/prometheus/common v0.59.1
-	github.com/redis/go-redis/v9 v9.6.1
+	github.com/redis/go-redis/v9 v9.7.0
 )
 
 require (
